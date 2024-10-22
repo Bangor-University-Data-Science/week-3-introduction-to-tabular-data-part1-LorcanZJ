@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def create_feature_type_dict(df):
     """
     Classifies features into numerical (continuous or discrete) and categorical (nominal or ordinal).
@@ -18,18 +21,14 @@ def create_feature_type_dict(df):
             'ordinal': []  # Fill with ordinal categorical features
         }
     }
-    for column in df.columns:
-        dtype = df.dtypes[column]
 
-        if dtype == 'int64' or dtype == 'float64':
-            if df[column].unique() > 20:
-                feature_types['numerical']['continuous'].append(column)
-            else:
+    for column in df.columns:
+        if pd.api.types.is_numeric_dtype(df[column]):
+            if df[column].nunique() < 10:
                 feature_types['numerical']['discrete'].append(column)
-        elif dtype == 'object' or dtype == 'category':
-            if dtype == 'category' and df[column].cat.ordered:
-                feature_types['categorical']['ordinal'].append(column)
             else:
-                feature_types['categorical']['nominal'].append(column)
+                feature_types['numerical']['continuous'].append(column)
+        elif pd.api.types.is_categorical_dtype(df[column]) or df[column].dtype == 'object':
+            feature_types['categorical']['nominal'].append(column)
 
     return feature_types
