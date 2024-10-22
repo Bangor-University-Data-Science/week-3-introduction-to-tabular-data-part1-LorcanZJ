@@ -10,5 +10,5 @@ def get_numerical_df(df, numerical_features):
         pd.DataFrame: DataFrame containing only numerical features.
     """
     pass  # Implement the logic here
-    numerical_df = df[numerical_df]
-    return numerical_df
+    valid_numerical_features = [col for col in numerical_features if col in df.columns]
+    return df[valid_numerical_features]
